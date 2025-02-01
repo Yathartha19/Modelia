@@ -6,6 +6,11 @@ import {
   LifeBuoy,
   Send,
   SquareTerminal,
+  FileText,
+  MessageSquare,
+  LogOut,
+  Box,
+  Logs,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -53,11 +58,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <div className="flex flex-row">
 
       <div className="w-[3.5rem] h-full bg-sidebar border-r border-[#2f3347]">
-
+        <div className="relative flex flex-col items-center justify-start mt-5 gap-2 h-[92vh]">
+          <FileText className="mb-4 hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35} />
+          <MessageSquare className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35}/>
+          <Box className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35}/>
+          <SquareTerminal className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35}/>
+          <Logs className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35}/>
+          <div className="absolute bottom-0 mb-5">
+            <LogOut className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35}/>
+          </div>
+        </div>
       </div>
 
       <Sidebar
-        className="ml-[3.5rem] top-[--header-height] !h-[calc(100svh-var(--header-height))]"
+        className="ml-[3.5rem] top-[2rem] !h-[calc(100svh-2rem)]"
         {...props}
       >
         <SidebarHeader>
