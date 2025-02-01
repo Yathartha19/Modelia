@@ -1,0 +1,7 @@
+---- FRONTEND ----
+Add tooltips for all hovers
+Add file import button active only when model allows image processing
+Functionality for exit button
+Add ui functionality for all buttons
+State management
+Backend integration

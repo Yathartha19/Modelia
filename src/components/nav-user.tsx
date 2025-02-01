@@ -3,15 +3,10 @@
 import {
   BadgeCheck,
   ChevronsUpDown,
-  LogOut,
   Sparkles,
+  Download,
 } from "lucide-react"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -89,7 +84,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut className="rotate-90"/>
+              <Download />
               Download Models
             </DropdownMenuItem>
           </DropdownMenuContent>
