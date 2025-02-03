@@ -11,8 +11,18 @@ import {
   } from "@/components/ui/alert-dialog"
 
 import { LogOut } from "lucide-react"
+import { exit } from "process"
   
   export function AlertDialogDemo() {
+
+    const close = () => {
+      if (typeof window !== "undefined" && window.electron) {
+        console.log("✅ Calling Electron closeApp()");
+        window.electron.closeApp();
+      } else {
+        console.error("❌ Electron API not available");
+      }
+    };        
 
     return (
       <AlertDialog>
@@ -28,7 +38,7 @@ import { LogOut } from "lucide-react"
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Continue</AlertDialogAction>
+            <AlertDialogAction onClick={close}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

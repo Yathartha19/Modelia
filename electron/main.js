@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
 let mainWindow;
@@ -14,7 +14,7 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, "preload.js"), // Optional
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
@@ -24,6 +24,11 @@ const createWindow = () => {
     mainWindow = null;
   });
 };
+
+ipcMain.on("close-app", () => {
+  console.log("✅ Received close-app event, quitting...");
+  app.quit();
+});
 
 app.whenReady().then(createWindow);
 
