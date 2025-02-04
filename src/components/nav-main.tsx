@@ -6,7 +6,6 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
@@ -29,8 +28,8 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>Chats</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-            <SidebarMenuItem>
+        {items.map((item, index) => (
+            <SidebarMenuItem key={index}>
               <SidebarMenuButton asChild tooltip={item.title}>
                 <a href={item.url}>
                   <span className="pl-2">{item.title}</span>

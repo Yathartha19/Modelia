@@ -116,7 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </div>
 
       <Sidebar
-        className="ml-[3.5rem] top-[2rem] !h-[calc(100svh-2rem)]"
+        className="ml-[3rem] top-[2rem] !h-[calc(100svh-2rem)]"
         {...props}
       >
         <SidebarHeader>
