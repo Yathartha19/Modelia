@@ -16,6 +16,7 @@ export function Chat() {
     const [modelText, setModelText] = useState("");
     const [input, setInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const toParameters = () => {
         setChat(false);
@@ -27,10 +28,13 @@ export function Chat() {
             e.preventDefault();
             if (input.trim() === "") return;
 
+            setLoading(true);
+
             if (model === '') {
                 toast({
                     title: "Please select a model to chat with.",
                   })
+                setLoading(false);
                 return;
               }
 
@@ -59,9 +63,11 @@ export function Chat() {
                     setModelText(data.model)
                 }
 
+                setLoading(false);
+
             } catch (error) {
                 console.error('Error fetching mdoel reply:', error);
-                console.log('uh')
+                setLoading(false);
             }
         }
     };
@@ -101,6 +107,7 @@ export function Chat() {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleSendMessage}
+                                disabled={loading}
                             ></textarea>
                         </div>
                         <div className="w-full px-5 mb-3 flex flex-row items-center justify-between">
