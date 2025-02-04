@@ -1,5 +1,7 @@
 "use client"
 
+import useSidebarStates from "../app/store/store"
+
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -20,19 +22,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
-  const { isMobile } = useSidebar()
+export function NavUser() {
+  const { model, setModel } = useSidebarStates();
+
+  const handleModelSelect = (selectedModel: string) => {
+    setModel(selectedModel);
+  };
 
   return (
     <SidebarMenu>
@@ -45,8 +42,8 @@ export function NavUser({
             >
               <Sparkles size={40} />
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold">{model || "Select a Model"}</span>
+                <span className="truncate text-xs">Powered by Ollama</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -67,19 +64,19 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleModelSelect("llama3.2:3b")}>
                 <Sparkles />
-                Llama 3.2:3b
+                llama3.2:3b {model === "llama3.2:3b" && "✓"}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleModelSelect("deepseek-r1:7b")}>
                 <Sparkles />
-                Deepseek-r1:7b
+                deepseek-r1:7b {model === "deepseek-r1:7b" && "✓"}
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleModelSelect("deepseek-r1:1.5b")}>
                 <Sparkles />
-                Deepseek:1.5b
+                deepseek-r1:1.5b {model === "deepseek:1.5b" && "✓"}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

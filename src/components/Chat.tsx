@@ -8,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function Chat() {
-    const { setChat, setParameters, chatBox, Download, Console, Logs } = useSidebarStates();
+    const { setChat, setParameters, chatBox, Download, Console, Logs, model } = useSidebarStates();
     const [messages, setMessages] = useState<{ text: string; sender: "user" | "bot" }[]>([]);
-    const [model, setModel] = useState("");
+    const [modelText, setModelText] = useState("");
     const [input, setInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,7 +35,7 @@ export function Chat() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        model: 'llama3.2:3b',
+                        model: model,
                         prompt: input,
                         stream: false,
                     }),
@@ -46,7 +46,7 @@ export function Chat() {
                 if (data.response) {
                     const botMessage = { text: data.response, sender: "bot" as const };
                     setMessages((prev) => [...prev, botMessage]);
-                    setModel(data.model)
+                    setModelText(data.model)
                 }
 
             } catch (error) {
@@ -68,7 +68,7 @@ export function Chat() {
                         <ScrollArea className="relative h-full w-full">
                             {messages.map((msg, index) => (
                                 <div key={index}>
-                                    {msg.sender !== "user" && <p className="text-xs text-gray-400 ml-16">{model}</p>}
+                                    {msg.sender !== "user" && <p className="text-xs text-gray-400 ml-16">{modelText}</p>}
                                     <div className={`px-5 py-3 rounded-lg w-fit max-w-[50%] ${
                                             msg.sender === "user"
                                                 ? "bg-[#000]/25 text-white self-end mr-16 ml-auto mb-2"

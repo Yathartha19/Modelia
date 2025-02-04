@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import useSidebarStates from "../app/store/store";
 
 import * as React from "react"
@@ -144,7 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavSecondary items={data.navSecondary} className="mt-auto" />
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={data.user} />
+          <NavUser />
         </SidebarFooter>
       </Sidebar>
       
