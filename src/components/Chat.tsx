@@ -6,8 +6,11 @@ import { FileUp, Wrench } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast"
 
 export function Chat() {
+
+    const { toast } = useToast()
     const { setChat, setParameters, chatBox, Download, Console, Logs, model } = useSidebarStates();
     const [messages, setMessages] = useState<{ text: string; sender: "user" | "bot" }[]>([]);
     const [modelText, setModelText] = useState("");
@@ -23,6 +26,13 @@ export function Chat() {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             if (input.trim() === "") return;
+
+            if (model === '') {
+                toast({
+                    title: "Please select a model to chat with.",
+                  })
+                return;
+              }
 
             const userMessage = { text: input, sender: "user" as const };
             setMessages((prev) => [...prev, userMessage]);
