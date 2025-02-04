@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import useSidebarStates from "../app/store/store"
 
 import {
@@ -25,11 +26,28 @@ import {
 } from "@/components/ui/sidebar"
 
 export function NavUser() {
-  const { model, setModel } = useSidebarStates();
+  const { model, setModel } = useSidebarStates()
+  const [models, setModels] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch("http://localhost:11434/api/tags")
+        if (!response.ok) throw new Error("Failed to fetch models")
+        
+        const data = await response.json()
+        setModels(data.models.map((m: { name: string }) => m.name))
+      } catch (error) {
+        console.error("Error fetching models:", error)
+      }
+    }
+
+    fetchModels()
+  }, [])
 
   const handleModelSelect = (selectedModel: string) => {
-    setModel(selectedModel);
-  };
+    setModel(selectedModel)
+  }
 
   return (
     <SidebarMenu>
@@ -48,6 +66,7 @@ export function NavUser() {
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side="top"
@@ -58,27 +77,28 @@ export function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <BadgeCheck className="h-4"/>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Select a Model</span>
+                  <span className="truncate font-semibold">{model || "Select a Model"}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleModelSelect("llama3.2:3b")}>
-                <Sparkles />
-                llama3.2:3b {model === "llama3.2:3b" && "✓"}
+
+            {models.length > 0 ? (
+              <DropdownMenuGroup>
+                {models.map((m) => (
+                  <DropdownMenuItem key={m} onClick={() => handleModelSelect(m)}>
+                    <Sparkles />
+                    {m} {model === m ? "" : ""}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            ) : (
+              <DropdownMenuItem disabled>
+                No models available
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleModelSelect("deepseek-r1:7b")}>
-                <Sparkles />
-                deepseek-r1:7b {model === "deepseek-r1:7b" && "✓"}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleModelSelect("deepseek-r1:1.5b")}>
-                <Sparkles />
-                deepseek-r1:1.5b {model === "deepseek:1.5b" && "✓"}
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            )}
+
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Download />
