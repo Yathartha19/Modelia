@@ -92,3 +92,62 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes typing1 {
+  0% {
+    opacity: 0;
+  }
+  33% {
+    opacity: 1;
+  }
+  66% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes typing2 {
+  0% {
+    opacity: 0;
+  }
+  33% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes typing3 {
+  0% {
+    opacity: 0;
+  }
+  33% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-typing1 {
+  animation: typing1 1.5s infinite;
+}
+
+.animate-typing2 {
+  animation: typing2 1.5s infinite;
+}
+
+.animate-typing3 {
+  animation: typing3 1.5s infinite;
+}
+
+
