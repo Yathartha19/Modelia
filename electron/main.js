@@ -9,7 +9,6 @@ const isMac = process.platform === "darwin";
 const isWindows = process.platform === "win32";
 const isLinux = process.platform === "linux";
 
-
 function isOllamaRunning() {
   try {
     if (isMac || isLinux) {
@@ -63,7 +62,7 @@ const createWindow = () => {
     height: 750,
     minWidth: 900,
     minHeight: 500,
-    frame: true,
+    frame: false,
     titleBarStyle: "hidden",
     webPreferences: {
       nodeIntegration: false,
@@ -77,7 +76,35 @@ const createWindow = () => {
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
+
+  mainWindow.on("maximize", () => {
+    mainWindow.webContents.send("window-maximized");
+  });
+
+  mainWindow.on("unmaximize", () => {
+    mainWindow.webContents.send("window-unmaximized");
+  });
 };
+
+ipcMain.on('minimize-window', () => {
+  mainWindow.minimize();
+});
+
+ipcMain.on('maximize-window', () => {
+  mainWindow.maximize();
+});
+
+ipcMain.on('unmaximize-window', () => {
+  mainWindow.unmaximize();
+});
+
+ipcMain.on('close-window', () => {
+  mainWindow.close();
+});
+
+ipcMain.handle('is-window-maximized', () => {
+  return mainWindow.isMaximized();
+});
 
 ipcMain.on("close-app", () => {
   console.log("✅ Received close-app event, quitting...");
