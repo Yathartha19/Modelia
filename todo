@@ -1,4 +1,4 @@
 ---- FRONTEND ----
 Onboarding
 Add tooltips for all hovers
-Add file import button active only when model allows image processing
+Add file import button active only when model allows image processing -- partially done ( need to add the models into the list )

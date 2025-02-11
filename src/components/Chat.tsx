@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import useSidebarStates from "../app/store/store";
-import { FileUp, Wrench } from "lucide-react";
+import { FileUp, Wrench, Send, Pause, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,9 +15,11 @@ export function Chat() {
   const [messages, setMessages] = useState<{ text: string; sender: "user" | "bot" }[]>([]);
   const [modelText, setModelText] = useState("");
   const [input, setInput] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [controller, setController] = useState<AbortController | null>(null);
 
   const toParameters = () => {
     setChat(false);
@@ -45,6 +47,9 @@ export function Chat() {
       setMessages((prev) => [...prev, userMessage]);
       setInput("");
 
+      const abortController = new AbortController();
+      setController(abortController);
+
       try {
         const response = await fetch("http://localhost:11434/api/generate", {
           method: "POST",
@@ -54,8 +59,9 @@ export function Chat() {
           body: JSON.stringify({
             model: model,
             prompt: input,
-            stream: true, 
+            stream: true,
           }),
+          signal: abortController.signal,
         });
 
         const reader = response.body?.getReader();
@@ -79,17 +85,72 @@ export function Chat() {
         setModelText(model);
         setLoading(false);
         setTyping(false);
+        setController(null);
       } catch (error) {
-        console.error("Error fetching model reply:", error);
+        if ((error as Error).name === "AbortError") {
+          console.log("Fetch aborted");
+        } else {
+          console.error("Error fetching model reply:", error);
+        }
         setLoading(false);
         setTyping(false);
+        setController(null);
       }
     }
+  };
+
+  const handleStopResponse = () => {
+    if (controller) {
+      controller.abort();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!file) return;
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("model", model);
+
+    try {
+      const response = await fetch("http://localhost:11434/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      const botMessage = { text: data.response, sender: "bot" as const };
+      setMessages((prev) => [...prev, botMessage]);
+
+      setLoading(false);
+      setFile(null);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleFileDelete = () => {
+    setFile(null);
   };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (file) {
+      handleFileUpload();
+    }
+  }, [file]);
 
   return (
     <div className="relative h-full flex-1 rounded-xl bg-muted/50 p-0 pt-4">
@@ -111,6 +172,13 @@ export function Chat() {
             </ScrollArea>
           </div>
 
+          {file && (
+            <div className="flex items-center justify-between w-full px-5 py-2 bg-gray-800 text-white rounded-lg mt-2 max-w-[10%] mx-auto">
+              <span className="truncate">{file.name}</span>
+              <X onClick={handleFileDelete} className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={20} />
+            </div>
+          )}
+
           <div className="flex flex-col items-center justify-between absolute bottom-4 left-4 right-4 bg-[#030816] border border-accent rounded-2xl h-[7.5rem]">
             <div className="w-full">
               <textarea
@@ -124,7 +192,15 @@ export function Chat() {
             </div>
             <div className="w-full px-5 mb-3 flex flex-row items-center justify-between">
               <div className="flex flex-row items-center justify-center gap-3">
-                <FileUp />
+                <label className={modelSupportsFileUpload(model) ? "" : "opacity-50 cursor-not-allowed"}>
+                  <FileUp />
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    disabled={!modelSupportsFileUpload(model)}
+                    className="hidden"
+                  />
+                </label>
                 <Wrench onClick={toParameters} className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35} />
               </div>
               <div className="flex items-center gap-2 space-x-2 border border-accent py-1 px-3 rounded-2xl">
@@ -132,6 +208,13 @@ export function Chat() {
                   CoT
                 </Label>
                 <Switch id="cot" />
+              </div>
+              <div className="flex items-center">
+                {loading ? (
+                  <Pause onClick={handleStopResponse} className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35} />
+                ) : (
+                  <Send onClick={() => handleSendMessage} className="hover:bg-accent p-[0.35rem] rounded-lg hover:cursor-pointer" size={35} />
+                )}
               </div>
             </div>
           </div>
@@ -144,3 +227,9 @@ export function Chat() {
     </div>
   );
 }
+
+const modelSupportsFileUpload = (model: string) => {
+  // List of models that support file uploads (idk which models support this so I'm leaving it empty for now)
+  const supportedModels = ["random-model", ''];
+  return supportedModels.includes(model);
+};
